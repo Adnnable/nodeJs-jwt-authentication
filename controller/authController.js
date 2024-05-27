@@ -6,7 +6,7 @@ const generateToken = (id) => {
 };
 
 exports.registerUser = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, role } = req.body;
   try {
     const userExists = await User.findOne({ email });
 
@@ -18,6 +18,7 @@ exports.registerUser = async (req, res) => {
       username,
       email,
       password,
+      role
     });
 
     if (user) {
@@ -26,6 +27,7 @@ exports.registerUser = async (req, res) => {
         username: user.username,
         email: user.email,
         token: generateToken(user._id),
+        role: user.role
       });
     } else {
       res.status(400).json({ message: "Invalid user details" });
@@ -65,6 +67,7 @@ exports.authUser = async (req, res) => {
         username: user.username,
         email: user.email,
         token: generateToken(user._id),
+        role: user.role
       });
     } else {
       res.status(401).json({ message: 'Invalid email or password' });
@@ -74,7 +77,6 @@ exports.authUser = async (req, res) => {
   }
 };
 
-
 exports.getProfile = async (req, res) => {
     const user = await User.findById(req.user.id).select('-password');
     if(user){
@@ -83,3 +85,5 @@ exports.getProfile = async (req, res) => {
         res.status(404).json({ message: 'User not found' });
     }
 }
+
+
